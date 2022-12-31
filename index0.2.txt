@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Input Form</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #4b6cb7, #182848);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 50%;
+      margin: auto;
+      padding: 20px;
+      background-color: white;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+    }
+
+    form label {
+      font-size: 18px;
+    }
+
+    form input[type="text"] {
+      width: 100%;
+      height: 30px;
+      margin: 10px 0;
+      font-size: 18px;
+      border-radius: 5px;
+    }
+
+    form button[type="submit"] {
+      background-color: #4b6cb7;
+      color: white;
+      font-size: 18px;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    form button[type="submit"]:hover {
+      background-color: #182848;
+    }
+
+    div {
+      width: 50%;
+      margin: auto;
+      padding: 20px;
+      background-color: white;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+    }
+
+    div h1 {
+      text-align: center;
+      font-size: 36px;
+      background: linear-gradient(to right, #4b6cb7, #182848);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      -moz-background-clip: text;
+      -moz-text-fill-color: transparent;
+    }
+  </style>
+</head>
+<body>
+  <form id="form">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name">
+    <label for="message">Message:</label>
+    <input type="text" id="message" name="message">
+    <button type="submit">Submit</button>
+  </form> 
+  <button id="load-button">Load Data</button>
+  <div>
+    <h1>Test version 0.2</h1>
+    <div id="display"></div>
+  </div>
+  <script>
+    const form = document.getElementById('form');
+    const display = document.getElementById('display');
+    const loadButton = document.getElementById('load-button');
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const name = document.getElementById('name').value;
+      const message = document.getElementById('message').value;
+      display.innerHTML = `<p>Name: ${name}</p><p>Message: ${message}</p>`;
+
+      // Store the name and message in the JSON file
+      const data = {
+        name: name,
+        message: message
+      };
+      fetch('/json/data.json', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+    });
+
+    // Update the div element with the values from the JSON file every 1 second
+    setInterval(() => {
+      fetch('/json/data.json')
+        .then(response => response.json())
+        .then((data) => {
+          display.innerHTML = `<p>Name: ${data.name}</p><p>Message: ${data.message}</p>`;
+        });
+    }, 1000);
+
+    // Load the data from the JSON file when the load button is clicked
+    loadButton.addEventListener('click', () => {
+      fetch('/json/data.json')
+        .then(response => response.json())
+        .then((data) => {
+          display.innerHTML = `<p>Name: ${data.name}</p><p>Message: ${data.message}</p>`;
+        });
+    });
+  </script>
+</body>
+</html>
